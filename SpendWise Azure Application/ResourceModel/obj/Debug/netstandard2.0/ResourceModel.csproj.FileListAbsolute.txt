@@ -1,0 +1,4 @@
+D:\Research\SpendWise\SpendWise.AI\ApplicationDashboardMVC\ResourceModel\obj\Debug\netstandard2.0\ResourceModel.csprojResolveAssemblyReference.cache
+D:\Research\SpendWise\SpendWise.AI\ApplicationDashboardMVC\ResourceModel\obj\Debug\netstandard2.0\ResourceModel.csproj.CoreCompileInputs.cache
+D:\Research\SpendWise\SpendWise.AI\ApplicationDashboardMVC\ResourceModel\obj\Debug\netstandard2.0\ResourceModel.AssemblyInfoInputs.cache
+D:\Research\SpendWise\SpendWise.AI\ApplicationDashboardMVC\ResourceModel\obj\Debug\netstandard2.0\ResourceModel.AssemblyInfo.cs

@@ -1,0 +1,397 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">SpendWise - Spend Intelligently Save Effortlessly</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-comments fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="Notifications">
+                                <span>
+                                    @if (ViewBag.Notifications != null)
+                                    {
+                                        @ViewBag.Notifications;
+                                    }
+                                </span>
+                            </div>
+                            <div>Notifications!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="viewDetails">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-line-chart fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="MonthlyExpense">
+                                <span>
+                                    @if (ViewBag.MonthlyExpense != null)
+                                    {
+                                        @ViewBag.MonthlyExpense;
+                                    }
+                                </span>
+                            </div>
+                            <div>Predictive Sep 2019 Expenses</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-usd fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="CountProducts">
+                                <span>
+                                    @if (ViewBag.SpendWiseExpense != null)
+                                    {
+                                        @ViewBag.SpendWiseExpense;
+                                    }
+                                </span>
+                            </div>
+                            <div>After SpendWise Savings</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="viewDetails">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> PREDICTIVE MONTHLY SPENDING
+
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div id="predictiveForecast"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> ANALYSIS BY CATEGORY
+                </div>
+                <div class="panel-body">
+                    <div id="customerByCountry"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div> 
+        </div>
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bell fa-fw"></i> Predictive Spending - Today
+                </div>
+                <a href="#" class="viewDetailsDailySpending">
+                    <div class="panel-footer">
+                        <span class="pull-left">View Details</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+                <!-- /.panel-heading -->
+                <div class="panel-body topCustomer">
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            @*
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Analysis by Category
+                    </div>
+                    <div class="panel-body">
+                        <div id="customerByCountry"></div>
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+            *@
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-4 -->
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /#page-wrapper -->
+<!-- MODAL -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel"> <span class="glyphicon glyphicon-search"></span> View Details </h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> <!-- MODEL HEADER-->
+            <div class="modal-body">
+            </div> <!-- MODAL BODY-->
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+
+@section Scripts{
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://www.google.com/uds/api/visualization/1.0/40ff64b1d9d6b3213524485974f36cc0/format+en,default+en,ui+en,corechart+en.I.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+        //Global Variable
+        google.load("visualization", "1", { packages: ["corechart"] });
+
+        $(document).ready(function () {
+
+
+
+            @*//View Details Button
+            $(".viewDetails").click(function () {
+
+                $(".modal-body").html('');
+
+                $.ajax({
+
+                    type: 'GET',
+                    url: '@Url.Action("GetDailySuggestions", "Dashboard")',
+                    data: { type: $(this).attr("data-type") },
+                    success: function (response) {
+                        $(".modal-body").html(response);
+                        $("#exampleModal").modal('show');
+                    },
+                    error: function () {
+                        alert("Something wrong");
+                    }
+
+                });
+
+            });*@
+
+
+            $("#ShowSuggestions").click(function () {
+                alert('hi');
+            })
+
+            //View Details Button
+            $(".viewDetailsDailySpending").click(function () {
+
+                $(".modal-body").html('');
+
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetDailySuggestions", "Dashboard")',
+                    data: { type: $(this).attr("data-type") },
+                    success: function (response) {
+                        $(".modal-body").html(response);
+                        $("#exampleModal").modal('show');
+                    },
+                    error: function () {
+                        alert("Something wrong");
+                    }
+
+                });
+
+            });
+
+            //Panel Body
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("DailyPredictiveExpense", "Dashboard")',
+                success: function (response) {
+                    $(".topCustomer").html(response);
+                },
+                error: function () {
+                    alert("Something Wrong");
+                }
+            });
+
+             //Chart Orders By Country
+            GetPredictiveForecast()
+
+            //Chart Customer By Country
+            GetCategory()
+
+
+            //function  Orders By Country
+            function GetPredictiveForecast() {
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetPredictiveForecast", "Dashboard")',
+                    success: function (response) {
+
+                        console.log(response);
+
+                        var data = new google.visualization.DataTable();
+
+                        data.addColumn('string', 'Time');
+                        data.addColumn('number', 'Predictive Expenses');
+                        data.addColumn('number', 'SpendWise Expenses');
+
+                        for (var i = 0; i < response.result.length; i++) {
+                            data.addRow([response.result[i].time, response.result[i].Spending, response.result[i].Saving]);
+                        }
+
+                        var chart = new google.visualization.LineChart(document.getElementById('predictiveForecast'));
+
+                        //chart.draw(data,
+                        //  {
+                        //      title: "",
+                        //      position: "top",
+                        //      fontsize: "14px",
+                        //      chartArea: { width: '100%' },
+                        //  });
+
+                        //var data = google.visualization.arrayToDataTable([
+                        //    ['Date', 'Predictive Expenses', 'SpendWise Expenses'],
+                        //    ['09/08/2019', 32, 22],
+                        //    ['09/09/2019', 36, 27],
+                        //    ['09/10/2019', 25, 22],
+                        //    ['09/11/2019', 33, 28],
+                        //    ['09/12/2019', 27, 15],
+                        //    ['09/13/2019', 29, 16],
+                        //    ['09/14/2019', 36, 22]
+                        //]);
+
+                        chart.draw(data,
+                            {
+                                title: "",
+                                position: "top",
+                                fontsize: "14px",
+                                curveType: 'function',
+                                legend: { position: 'bottom' },
+                                chartArea: { width: '100%' },
+                                hAxis: {
+                                    format: 'M/d',
+                                    gridlines: { count: 15 }
+                                },
+                            });
+                    },
+                    error: function () {
+                        alert("Error loading data!");
+                    }
+                });
+
+
+                MonthlyExpense()
+
+            }
+
+            function GetCategory() {
+
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("CategoryAnalysis", "Dashboard")',
+                    success: function (response) {
+
+                        console.log(response);
+
+                        var data = new google.visualization.DataTable();
+
+                        data.addColumn('string', 'Category Type');
+                        data.addColumn('number', 'Count');
+
+                        for (var i = 0; i < response.result.length; i++) {
+                            data.addRow([response.result[i].Category, response.result[i].Count]);
+                        }
+
+
+                        var chart = new google.visualization.PieChart(document.getElementById('customerByCountry'));
+
+                        chart.draw(data,
+                          {
+                              title: "",
+                              position: "top",
+                              fontsize: "14px",
+                              chartArea: { width: '100%' },
+                          });
+                    },
+                    error: function () {
+                        alert("Error loading data!");
+                    }
+                });
+
+            }
+
+
+                function MonthlyExpense() {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("MonthlyExpense", "Dashboard")',
+                    success: function (response) {
+
+                        console.log(response);
+
+                        $('#MonthlyExpense').html(response);
+                    },
+                    error: function () {
+                        alert("Error loading data!");
+                    }
+                });
+
+            }
+
+
+    $(function (){
+        $('a.edit').click(function () {
+            var url = $(this).attr('href');
+            window.open(url, "popupWindow", "width=600,height=800,scrollbars=yes");
+            });
+            return false;
+        });
+
+        });
+
+    </script>
+
+}

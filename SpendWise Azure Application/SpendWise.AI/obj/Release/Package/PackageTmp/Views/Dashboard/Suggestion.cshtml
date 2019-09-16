@@ -1,0 +1,33 @@
+﻿@model IEnumerable<SpendWise.AI.Models.SuggestionsViewModel>
+
+@using System.Web.Mvc.Html;
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StreetAddress)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.URL)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StreetAddress)
+            </td>
+            <td>
+                @Html.ActionLink(item.URL, "NewWindow", "Dashboard")              
+            </td>
+        </tr>
+    }
+</table>

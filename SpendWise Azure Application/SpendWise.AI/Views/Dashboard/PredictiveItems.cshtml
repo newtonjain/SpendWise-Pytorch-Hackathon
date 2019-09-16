@@ -1,0 +1,38 @@
+﻿@model IEnumerable<SpendWise.AI.Models.DailyPredictiveViewModel>
+
+
+<div>
+    <ajaxToolkit:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server">
+    </ajaxToolkit:ToolkitScriptManager>
+</div>
+<ajaxToolkit:RoundedCornersExtender ID="Panel1_RoundedCornersExtender"
+                                    runat="server" Enabled="True" TargetControlID="Panel1" Radius="15">
+</ajaxToolkit:RoundedCornersExtender>
+
+
+<div class="list-group">
+    @foreach (var predictiveItem in Model)
+    {
+        <a href="#" class="list-group-item">
+            <div style="display: inline-block;width: 60px;">
+                <img class="rounded img-thumbnail" src="@string.Format("/Images/Expenses/{0}", predictiveItem.ItemImage)" alt="" style="width:50px; height:60px;" />
+            </div>
+            @predictiveItem.ItemName
+            <span class="label label-info"> @string.Format("{0}{1}", "", predictiveItem.AmountSpend) </span>
+            <span class="label label-info">
+                @string.Format("{0}{1}", "", predictiveItem.ItemCategory)
+            </span>
+            <span style="float:right">
+                <input type="image" src="@string.Format("/Images/Expenses/idea.png")" style="width:25px; height:25px; border:solid" value="Idea" onclick="location.href='@Url.Action("GetDailySuggestions", "Dashboard", new { productCategory = predictiveItem.ItemName })'" />
+            </span>
+        </a>
+    }
+</div>
+
+
+
+
+
+
+
+
