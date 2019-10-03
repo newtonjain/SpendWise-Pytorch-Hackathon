@@ -99,7 +99,7 @@ if __name__ == "__main__":
     num_samples = args.num_samples
     enc, dec, kwargs = load_model()
     final_y_pred = predict(enc, dec, data, **kwargs)
-    print(final_y_pred[:, 0])
+    print(final_y_pred)
     print(final_y_pred.shape)
 
     if debug:

@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser("SpendWise Trainer")
 parser.add_argument("--num-epochs", type=int, default=10)
 parser.add_argument("--data-dir", default="data/Demo-User-Bank-Data.csv")
 parser.add_argument("--out-seq-len", default=30, type=int)
+parser.add_argument("--trained-models-dir", default="trained_models")
 args = parser.parse_args()
 
 def preprocess_data(dat, col_names) -> Tuple[TrainData, StandardScaler]:
@@ -223,5 +224,9 @@ with open(os.path.join("data", "da_rnn_kwargs.json"), "w") as fi:
     json.dump(da_rnn_kwargs, fi, indent=4)
 
 joblib.dump(scaler, os.path.join("data", "scaler.pkl"))
-torch.save(model.encoder.state_dict(), os.path.join("data", "encoder.torch"))
-torch.save(model.decoder.state_dict(), os.path.join("data", "decoder.torch"))
+if not os.path.exists(args.trained_models_dir):
+    os.makedirs(args.trained_models_dir)
+torch.save(model.encoder.state_dict(), os.path.join(args.trained_models_dir,
+                                                    "encoder.torch"))
+torch.save(model.decoder.state_dict(), os.path.join(args.trained_models_dir,
+                                                    "decoder.torch"))
