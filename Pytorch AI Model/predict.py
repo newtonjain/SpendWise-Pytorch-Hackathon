@@ -15,8 +15,14 @@ from custom_types import TrainData
 from constants import device
 
 parser = argparse.ArgumentParser("SpendWise Predictor")
-parser.add_argument("--debug", type=bool, help="Enabled plots & debug info",
+parser.add_argument("--debug", action="store_true", help="Enabled plots & "
+                                                         "debug info",
                     default=False)
+parser.add_argument("--num-samples", type=int, help="Number of samples to use"
+                                                    "from default samples",
+                    default=10)
+parser.add_argument("--data-dir", default="data/Demo-User-Bank-Data.csv")
+parser.add_argument("--out-seq-len", default=30, type=int)
 args = parser.parse_args()
 
 
@@ -35,20 +41,21 @@ def preprocess_data(dat, col_names, scale) -> TrainData:
 
 
 def predict(encoder, decoder, t_dat, batch_size: int, T: int) -> np.ndarray:
-    y_pred = np.zeros((t_dat.feats.shape[0] - T + 1, t_dat.targs.shape[0]))
+    y_pred = np.zeros((t_dat.feats.shape[0] - T + 1, args.out_seq_len))
 
     for y_i in range(0, len(y_pred), batch_size):
         y_slc = slice(y_i, y_i + batch_size)
         batch_idx = range(len(y_pred))[y_slc]
         b_len = len(batch_idx)
         X = np.zeros((b_len, T - 1, t_dat.feats.shape[1]))
-        y_history = np.zeros((b_len, T - 1, 1))  #, t_dat.targs.shape[0]))
+        y_history = np.zeros((b_len, T - 1, args.out_seq_len))
+        # t_dat.targs.shape[0]))
 
         for b_i, b_idx in enumerate(batch_idx):
             idx = range(b_idx, b_idx + T - 1)
 
             X[b_i, :, :] = t_dat.feats[idx, :]
-            y_history[b_i, :] = t_dat.targs[idx, ]
+            y_history[b_i, :] = t_dat.targs[idx]
 
         y_history = numpy_to_tvar(y_history)
         _, input_encoded = encoder(numpy_to_tvar(X))
@@ -57,7 +64,7 @@ def predict(encoder, decoder, t_dat, batch_size: int, T: int) -> np.ndarray:
     return y_pred
 
 debug = args.debug
-save_plots = False
+save_plots = True
 
 def load_model(model_dir="data"):
     # Load the Encoder
@@ -78,19 +85,21 @@ def load_model(model_dir="data"):
     return enc, dec, da_rnn_kwargs
 
 
-def load_data(data_dir="data"):
-    raw_data = pd.read_csv(os.path.join(data_dir, "Demo-User-Bank-Data.csv"))
-    targ_cols = ("value",)
+def load_data(data_dir="data", num_samples=10):
+    raw_data = pd.read_csv(args.data_dir)
+    # targ_cols = ("cat1", "cat2", "cat3", "cat4", "cat5")
+    targ_cols = ("value", )
     scaler = joblib.load(os.path.join(data_dir, "scaler.pkl"))
-    data = preprocess_data(raw_data, targ_cols, scaler)
+    data = preprocess_data(raw_data.iloc[:num_samples, :], targ_cols, scaler)
     return data
 
 
 if __name__ == "__main__":
-    data = load_data()
+    data = load_data(num_samples=args.num_samples)
+    num_samples = args.num_samples
     enc, dec, kwargs = load_model()
     final_y_pred = predict(enc, dec, data, **kwargs)
-    print(final_y_pred)
+    print(final_y_pred[:, 0])
     print(final_y_pred.shape)
 
     if debug:
