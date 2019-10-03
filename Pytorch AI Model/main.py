@@ -189,7 +189,8 @@ logger.info(f"Shape of data: {raw_data.shape}.\nMissing in data: {raw_data.isnul
 targ_cols = ("value",)
 data, scaler = preprocess_data(raw_data, targ_cols)
 
-da_rnn_kwargs = {"batch_size": 128, "T": 10}
+with open(os.path.join("data", "da_rnn_kwargs.json"), "r") as fi:
+    da_rnn_kwargs = json.load(fi)
 config, model = da_rnn(data, n_targs=len(targ_cols), learning_rate=.001, **da_rnn_kwargs)
 print(config)
 iter_loss, epoch_loss = train(model, data, config, n_epochs=50, save_plots=save_plots)
