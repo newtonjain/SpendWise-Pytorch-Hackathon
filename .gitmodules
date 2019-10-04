@@ -1,0 +1,3 @@
+[submodule "pytorch_ai_model/deploy"]
+	path = pytorch_ai_model/deploy
+	url = https://github.com/sualvi/spendwise-flask-deployment

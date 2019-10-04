@@ -2,6 +2,7 @@ import typing
 from typing import Tuple
 import json
 import os
+import argparse
 
 import torch
 from torch import nn
@@ -20,6 +21,12 @@ from utils import numpy_to_tvar
 from constants import device
 
 logger = utils.setup_log()
+parser = argparse.ArgumentParser("SpendWise Trainer")
+parser.add_argument("--num-epochs", type=int, default=10)
+parser.add_argument("--data-dir", default="data/Demo-User-Bank-Data.csv")
+parser.add_argument("--out-seq-len", default=30, type=int)
+parser.add_argument("--trained-models-dir", default="trained_models")
+args = parser.parse_args()
 
 def preprocess_data(dat, col_names) -> Tuple[TrainData, StandardScaler]:
     scale = StandardScaler().fit(dat)
@@ -114,7 +121,7 @@ def train(net: DaRnnNet, train_data: TrainData, t_cfg: TrainConfig, n_epochs=10,
 
 def prep_train_data(batch_idx: np.ndarray, t_cfg: TrainConfig, train_data: TrainData):
     feats = np.zeros((len(batch_idx), t_cfg.T - 1, train_data.feats.shape[1]))
-    y_history = np.zeros((len(batch_idx), t_cfg.T - 1, train_data.targs.shape[1]))
+    y_history = np.zeros((len(batch_idx), t_cfg.T - 1, args.out_seq_len))
     y_target = train_data.targs[batch_idx + t_cfg.T]
 
     for b_i, b_idx in enumerate(batch_idx):
@@ -152,7 +159,7 @@ def train_iteration(t_net: DaRnnNet, loss_func: typing.Callable, X, y_history, y
 
 
 def predict(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int, T: int, on_train=False):
-    out_size = t_dat.targs.shape[1]
+    out_size = args.out_seq_len
     if on_train:
         y_pred = np.zeros((train_size - T + 1, out_size))
     else:
@@ -163,7 +170,7 @@ def predict(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int,
         batch_idx = range(len(y_pred))[y_slc]
         b_len = len(batch_idx)
         X = np.zeros((b_len, T - 1, t_dat.feats.shape[1]))
-        y_history = np.zeros((b_len, T - 1, t_dat.targs.shape[1]))
+        y_history = np.zeros((b_len, T - 1, args.out_seq_len))
 
         for b_i, b_idx in enumerate(batch_idx):
             if on_train:
@@ -184,17 +191,20 @@ def predict(t_net: DaRnnNet, t_dat: TrainData, train_size: int, batch_size: int,
 save_plots = True
 debug = False
 
-raw_data = pd.read_csv(os.path.join("data", "Demo-User-Bank-Data.csv"), nrows=100 if debug else None)
+raw_data = pd.read_csv(args.data_dir, nrows=100 if debug else None)
 logger.info(f"Shape of data: {raw_data.shape}.\nMissing in data: {raw_data.isnull().sum().sum()}.")
-targ_cols = ("value",)
+# targ_cols = ("cat1", "cat2", "cat3", "cat4", "cat5")
+targ_cols = ("value", )
 data, scaler = preprocess_data(raw_data, targ_cols)
 
-da_rnn_kwargs = {"batch_size": 128, "T": 10}
-config, model = da_rnn(data, n_targs=len(targ_cols), learning_rate=.001, **da_rnn_kwargs)
+with open(os.path.join("data", "da_rnn_kwargs.json"), "r") as fi:
+    da_rnn_kwargs = json.load(fi)
+config, model = da_rnn(data, n_targs=args.out_seq_len, learning_rate=.001,
+                       **da_rnn_kwargs)
 print(config)
-iter_loss, epoch_loss = train(model, data, config, n_epochs=50, save_plots=save_plots)
+iter_loss, epoch_loss = train(model, data, config, n_epochs=args.num_epochs,
+                              save_plots=save_plots)
 final_y_pred = predict(model, data, config.train_size, config.batch_size, config.T)
-print(final_y_pred)
 plt.figure()
 plt.semilogy(range(len(iter_loss)), iter_loss)
 utils.save_or_show_plot("iter_loss.png", save_plots)
@@ -212,6 +222,10 @@ utils.save_or_show_plot("final_predicted.png", save_plots)
 with open(os.path.join("data", "da_rnn_kwargs.json"), "w") as fi:
     json.dump(da_rnn_kwargs, fi, indent=4)
 
-joblib.dump(scaler, os.path.join("data", "scaler.pkl"))
-torch.save(model.encoder.state_dict(), os.path.join("data", "encoder.torch"))
-torch.save(model.decoder.state_dict(), os.path.join("data", "decoder.torch"))
+joblib.dump(scaler, os.path.join(args.trained_models_dir, "scaler.pkl"))
+if not os.path.exists(args.trained_models_dir):
+    os.makedirs(args.trained_models_dir)
+torch.save(model.encoder.state_dict(), os.path.join(args.trained_models_dir,
+                                                    "encoder.torch"))
+torch.save(model.decoder.state_dict(), os.path.join(args.trained_models_dir,
+                                                    "decoder.torch"))

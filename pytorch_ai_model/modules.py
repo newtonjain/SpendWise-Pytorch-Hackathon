@@ -4,12 +4,12 @@ from torch.autograd import Variable
 from torch.nn import functional as tf
 
 
-def init_hidden(x, hidden_size: int):
+def init_hidden(x, hidden_size: int, seq_len=1):
     """
     Train the initial value of the hidden state:
     https://r2rt.com/non-zero-initial-states-for-recurrent-neural-networks.html
     """
-    return Variable(torch.zeros(1, x.size(0), hidden_size))
+    return Variable(torch.zeros(seq_len, x.size(0), hidden_size))
 
 
 class Encoder(nn.Module):
@@ -83,8 +83,10 @@ class Decoder(nn.Module):
         # input_encoded: (batch_size, T - 1, encoder_hidden_size)
         # y_history: (batch_size, (T-1))
         # Initialize hidden and cell, (1, batch_size, decoder_hidden_size)
-        hidden = init_hidden(input_encoded, self.decoder_hidden_size)
-        cell = init_hidden(input_encoded, self.decoder_hidden_size)
+        hidden = init_hidden(input_encoded, self.decoder_hidden_size,
+                             seq_len=1)  # y_history.shape[-1])
+        cell = init_hidden(input_encoded, self.decoder_hidden_size,
+                           seq_len=1)  # y_history.shape[-1])
         context = Variable(torch.zeros(input_encoded.size(0), self.encoder_hidden_size))
 
         for t in range(self.T - 1):
