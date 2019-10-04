@@ -205,7 +205,6 @@ print(config)
 iter_loss, epoch_loss = train(model, data, config, n_epochs=args.num_epochs,
                               save_plots=save_plots)
 final_y_pred = predict(model, data, config.train_size, config.batch_size, config.T)
-print(final_y_pred)
 plt.figure()
 plt.semilogy(range(len(iter_loss)), iter_loss)
 utils.save_or_show_plot("iter_loss.png", save_plots)
@@ -223,7 +222,7 @@ utils.save_or_show_plot("final_predicted.png", save_plots)
 with open(os.path.join("data", "da_rnn_kwargs.json"), "w") as fi:
     json.dump(da_rnn_kwargs, fi, indent=4)
 
-joblib.dump(scaler, os.path.join("data", "scaler.pkl"))
+joblib.dump(scaler, os.path.join(args.trained_models_dir, "scaler.pkl"))
 if not os.path.exists(args.trained_models_dir):
     os.makedirs(args.trained_models_dir)
 torch.save(model.encoder.state_dict(), os.path.join(args.trained_models_dir,

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.externals import joblib
+from flask import Flask, jsonify, request, render_template
 
 from modules import Encoder, Decoder
 from utils import numpy_to_tvar
@@ -23,8 +24,12 @@ parser.add_argument("--num-samples", type=int, help="Number of samples to use"
                     default=10)
 parser.add_argument("--data-dir", default="data/Demo-User-Bank-Data.csv")
 parser.add_argument("--out-seq-len", default=30, type=int)
+parser.add_argument("--trained-model-dir", default="trained_models")
 args = parser.parse_args()
 
+# Initialize the app and set a secret_key.
+app = Flask(__name__)
+app.secret_key = 'something_secret'
 
 def preprocess_data(dat, col_names, scale) -> TrainData:
     proc_dat = scale.transform(dat)
@@ -96,17 +101,36 @@ def load_data(data_dir="data", num_samples=10):
     return data
 
 
-if __name__ == "__main__":
-    data = load_data(num_samples=args.num_samples)
-    num_samples = args.num_samples
-    enc, dec, kwargs = load_model()
-    final_y_pred = predict(enc, dec, data, **kwargs)
-    print(final_y_pred)
-    print(final_y_pred.shape)
+def parse_inputs(request_dict, category_names):
+    x_list = []
+    for category in category_names:
+        value = request_dict.get(category, None)
+        if value:
+            x_list.append(value)
+    return x_list
 
-    if debug:
-        plt.figure()
-        plt.plot(final_y_pred, label='Predicted')
-        plt.plot(data.targs[(kwargs["T"]-1):], label="True")
-        plt.legend(loc='upper left')
-        utils.save_or_show_plot("final_predictions_on_serving.png", save_plots)
+
+@app.route('/api', methods=['GET', 'POST'])
+def api():
+    trained_model_dir = "trained_models"
+    category_names = ["category1",]
+    out_seq_len = 30
+    if not request.json:
+        return jsonify({"error": "Invalid inputs"})
+    x_list = parse_inputs(request.json, category_names)
+    input_data = pd.DataFrame(x_list)
+    scaler = joblib.load(os.path.join(trained_model_dir, "scaler.pkl"))
+    proc_data = scaler.transform(input_data)
+    feats = proc_data
+    targets = np.random.randint(1, 100, size=(1, out_seq_len))
+
+    data = TrainData(feats, targets)
+    print("data:", data)
+    enc, dec, kwargs = load_model(trained_model_dir)
+    pred = predict(enc, dec, data, **kwargs)
+    results = jsonify({"predictions": np.squeeze(pred).tolist()})
+    return results
+
+
+if __name__ == "__main__":
+    app.run()
