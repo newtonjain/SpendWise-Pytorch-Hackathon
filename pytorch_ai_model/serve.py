@@ -125,7 +125,6 @@ def api():
     targets = np.random.randint(1, 100, size=(1, out_seq_len))
 
     data = TrainData(feats, targets)
-    print("data:", data)
     enc, dec, kwargs = load_model(trained_model_dir)
     pred = predict(enc, dec, data, **kwargs)
     results = jsonify({"predictions": np.squeeze(pred).tolist()})
